@@ -205,6 +205,8 @@ class WebServer {
           // Check if both parameters are present
             if (!query_pairs.containsKey("num1") || !query_pairs.containsKey("num2")) {
               throw new IllegalArgumentException("Missing parameter. Please provide both num1 and num2.");
+            }else if(query_pairs == null){
+              throw new IllegalArgumentException("Missing parameter. Please provide both num1 and num2.");
             }
 
             // Parse the parameters as integers
