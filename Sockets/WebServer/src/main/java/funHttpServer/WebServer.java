@@ -203,9 +203,7 @@ class WebServer {
           query_pairs = splitQuery(request.replace("multiply?", ""));
 
           // Check if both parameters are present
-            if (!query_pairs.containsKey("num1") || !query_pairs.containsKey("num2") || query_pairs.equals(null)) {
-              throw new IllegalArgumentException("Missing parameter. Please provide both num1 and num2.");
-            }else if(query_pairs == null){
+            if (!query_pairs.containsKey("num1") || !query_pairs.containsKey("num2") || query_pairs.equals("")) {
               throw new IllegalArgumentException("Missing parameter. Please provide both num1 and num2.");
             }
 
