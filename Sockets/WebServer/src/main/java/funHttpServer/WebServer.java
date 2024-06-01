@@ -225,7 +225,6 @@ class WebServer {
                   builder.append("Error: Both num1 and num2 must be valid integers.");
                 } 
             }
-          }
             
         } else if (request.contains("github?")) {
           // pulls the query from the request and runs it with GitHub's REST API
