@@ -198,41 +198,34 @@ class WebServer {
           // wrong data is given this just crashes
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-          try {
-          // Extract path parameters
-          query_pairs = splitQuery(request.replace("multiply?", ""));
+          if (!query_pairs.containsKey("num1") || !query_pairs.containsKey("num2")) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Error: Missing parameter. Please provide both num1 and num2.");
+            } else {
+        // Parse the parameters as integers and handle any non-integer input
+                try {
+                  Integer num1 = Integer.parseInt(query_pairs.get("num1"));
+                  Integer num2 = Integer.parseInt(query_pairs.get("num2"));
 
-          // Check if both parameters are present
-            if (!query_pairs.containsKey("num1") || !query_pairs.containsKey("num2") || query_pairs == null) {
-              throw new IllegalArgumentException("Missing parameter. Please provide both num1 and num2.");
+                  // Do the multiplication
+                  Integer result = num1 * num2;
+
+                  // Generate response
+                  builder.append("HTTP/1.1 200 OK\n");
+                  builder.append("Content-Type: text/html; charset=utf-8\n");
+                  builder.append("\n");
+                  builder.append("Result is: " + result);
+                } catch (NumberFormatException e) {
+                  // Handle the case where parameters are not valid integers
+                  builder.append("HTTP/1.1 400 Bad Request\n");
+                  builder.append("Content-Type: text/html; charset=utf-8\n");
+                  builder.append("\n");
+                  builder.append("Error: Both num1 and num2 must be valid integers.");
+                } 
             }
-
-            // Parse the parameters as integers
-            Integer num1 = Integer.parseInt(query_pairs.get("num1"));
-            Integer num2 = Integer.parseInt(query_pairs.get("num2"));
-
-            // Do the multiplication
-            Integer result = num1 * num2;
-
-            // Generate response
-            builder.append("HTTP/1.1 200 OK\n");
-            builder.append("Content-Type: text/html; charset=utf-8\n");
-            builder.append("\n");
-            builder.append("Result is: " + result);
-
-          } catch (NumberFormatException e) {
-            // Handle the case where parameters are not valid integers
-            builder.append("HTTP/1.1 400 Bad Request\n");
-            builder.append("Content-Type: text/html; charset=utf-8\n");
-            builder.append("\n");
-            builder.append("Error: Both num1 and num2 must be valid integers.");
-          } catch (IllegalArgumentException e) {
-            // Handle the case where parameters are missing
-            builder.append("HTTP/1.1 400 Bad Request\n");
-            builder.append("Content-Type: text/html; charset=utf-8\n");
-            builder.append("\n"); 
-            builder.append("Error: " + e.getMessage());
-          } 
+          }
             
         } else if (request.contains("github?")) {
           // pulls the query from the request and runs it with GitHub's REST API
