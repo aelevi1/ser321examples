@@ -205,32 +205,20 @@ class WebServer {
           Integer num1 = Integer.parseInt(query_pairs.get("num1"));
           Integer num2 = Integer.parseInt(query_pairs.get("num2"));
 
-          try {
-            //checking to see if both parameters are present
-            if(!query_pairs.containsKey(num1) || !query_pairs.containsKey(num2)){
-              throw new IllegalArgumentException("Missing parameter.  Please provide both num1 and num2.");
-            }
-
           // do math
-            else{
-              Integer result = num1 * num2;
+          Integer result = num1 * num2;
 
           // Generate response
-              builder.append("HTTP/1.1 200 OK\n");
-              builder.append("Content-Type: text/html; charset=utf-8\n");
-              builder.append("\n");
-              builder.append("Result is: " + result);
-            }
-            }catch (NumberFormatException e) {
+             if(query_pairs.containsKey(num1) && query_pairs.containsKey(num2)){
+                builder.append("HTTP/1.1 200 OK\n");
+                builder.append("Content-Type: text/html; charset=utf-8\n");
+                builder.append("\n");
+                builder.append("Result is: " + result);
+             }else {
               builder.append("HTTP/1.1 400 Bad Request\n");
               builder.append("Content-Type: text/html; charset=utf-8\n");
               builder.append("\n");
               builder.append("Error: Both num1 and num2 must be valid integers"); 
-            }catch (IllegalArgumentException e){
-              builder.append("HTTP/1.1 400 Bad Request\n");
-              builder.append("Content-Type: text/html; charset=utf-8\n");
-              builder.append("\n");
-              builder.append("Error: " + e.getMessage()); 
             } 
             
         } else if (request.contains("github?")) {
