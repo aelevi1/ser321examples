@@ -205,11 +205,12 @@ class WebServer {
           Integer num1 = Integer.parseInt(query_pairs.get("num1"));
           Integer num2 = Integer.parseInt(query_pairs.get("num2"));
 
-          // do math
-          Integer result = num1 * num2;
+
 
           // Generate response
              if(query_pairs.containsKey(num1) || query_pairs.containsKey(num2)){
+                // do math
+                Integer result = num1 * num2;
                 builder.append("HTTP/1.1 200 OK\n");
                 builder.append("Content-Type: text/html; charset=utf-8\n");
                 builder.append("\n");
