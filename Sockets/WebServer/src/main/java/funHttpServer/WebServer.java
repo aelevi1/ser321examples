@@ -202,7 +202,7 @@ class WebServer {
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
           try {
 
-            if (query_pairs.equals("")){
+            if (query_pairs.containsKey(""){
                 throw new IllegalArgumentException("Missing parameter. Please provide both num1 and num2.");
 
             }
