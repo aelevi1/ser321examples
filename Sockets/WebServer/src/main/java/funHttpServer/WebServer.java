@@ -25,6 +25,8 @@ import java.util.Random;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.nio.charset.Charset;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 class WebServer {
@@ -254,7 +256,7 @@ class WebServer {
             String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
             System.out.println(json);
 
-            JsonArray jsonArray = newJsonArray(json);
+            JSONArray jsonArray = new JSONArray(json);
             StringBuilder responseContent = new StringBuilder();
 
             responseContent.append("<html><body>");
@@ -262,10 +264,10 @@ class WebServer {
             responseContent.append("<ul>");
 
             for (int i = 0; i < jsonArray.length(); i++) {
-              JsonObject repo = jsonArray.getJsonObject(i);
+              JSONObject repo = jsonArray.getJSONObject(i);
               String fullName = repo.getString("full_name");
               int id = repo.getInt("id");
-              String ownerLogin = repo.getJsonObject("owner").getString("login");
+              String ownerLogin = repo.getJSONObject("owner").getString("login");
 
               responseContent.append("<li>");
               responseContent.append("Full Name: ").append(fullName).append("<br>");
