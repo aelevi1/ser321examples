@@ -203,7 +203,7 @@ class WebServer {
           try {
 
           // Extract path parameters
-          query_pairs = splitQuery(request.replace("multiply?", ""));
+          query_pairs = splitQuery(request.replace("multiply?", ""), "num1", "num2");
 
           // Check if both parameters are present
             if (!query_pairs.containsKey("num1") || !query_pairs.containsKey("num2")) {
