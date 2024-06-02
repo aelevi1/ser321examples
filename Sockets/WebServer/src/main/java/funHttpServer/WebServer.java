@@ -25,10 +25,7 @@ import java.util.Random;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.nio.charset.Charset;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+
 
 class WebServer {
   public static void main(String args[]) {
@@ -257,32 +254,29 @@ class WebServer {
             String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
             System.out.println(json);
 
-            Gson gson = new Gson();
+            JSONArray jsonArray = newJSONArray(json);
             JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
             StringBuilder responseContent = new StringBuilder();
 
-            if (jsonElemetn.isJsonArray()) {
-              JsonArray jsonArray = jsonElement.getAsJsonArray();
-              responseContent.append("<html><body>");
-              responseContent.append("<ht>GitHub Repositories</h1>");
-              responseContent.append("<ul>");
-              for (JsonElement element : jsonArray) {
-                JsonObject repo = element.getAsJsonObject();
-                String fullName = repo.get("full_name").getAsString();
-                int id = repo.get("id").getAsInt();
-                String ownerLogin = repo.get("owner").getAsJsonObject().get("login").getAsString();
-                responseContent.append("<li>");
-                responseContent.append("Full Name: ").append(fullName).append("<br>");
-                responseContent.append("ID: ").append(id).append("<br>");
-                responseContent.append("Owner Login: ").append(ownerLogin);
-                responseContent.append("</li>");
-              }
-              responseContent.append("</ul>");
-              responseContent.append("</body></html>");  
-            } else {
-              throw new IllegalStateException("Unexpected JSON structure");
+            responseContent.append("<html><body>");
+            responseContent.append("<ht>GitHub Repositories</h1>");
+            responseContent.append("<ul>");
 
+            for (int i = 0; i < jsonArray.length(); i++) {
+              JSONObject repo = jsonArray.getJSONObject(i);
+              String fullName = repo.getString("full_name");
+              int id = repo.getInt("id");
+              String ownerLogin = repo.getJSONObject("owner").getString("login");
+
+              responseContent.append("<li>");
+              responseContent.append("Full Name: ").append(fullName).append("<br>");
+              responseContent.append("ID: ").append(id).append("<br>");
+              responseContent.append("Owner Login: ").append(ownerLogin);
+              responseContent.append("</li>");
             }
+            responseContent.append("</ul>");
+            responseContent.append("</body></html>"); 
+            
             builder.append("HTTP/1.1 200 OK\n");
             builder.append("Content-Type: text/html; charset=utf-8\n");
             builder.append("\n");
