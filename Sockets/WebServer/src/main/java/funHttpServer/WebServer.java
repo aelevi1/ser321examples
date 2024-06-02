@@ -325,7 +325,41 @@ class WebServer {
             builder.append("\n");
             builder.append("Error: " + e.getMessage());
           }
-      }else {
+      }else if (request.contains("power?")) {
+          Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+          try {
+            query_pairs = splitQuery(request.replace("power?", ""));
+
+            // Check if both parameters are present
+            if (!query_pairs.containsKey("base") || !query_pairs.containsKey("exponent")) {
+              throw new IllegalArgumentException("Missing parameter. Please provide both base and exponent.");
+            }
+
+            // Parse the parameters as integers
+            double base = Double.parseDouble(query_pairs.get("base"));
+            double exponent = Double.parseDouble(query_pairs.get("exponent"));
+
+            // Calculate the power
+            double result = Math.pow(base, exponent);
+
+            // Generate response
+            builder.append("HTTP/1.1 200 OK\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Result: " + result);
+
+          } catch (NumberFormatException e) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Error: Both base and exponent must be valid numbers.");
+          } catch (IllegalArgumentException e) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Error: " + e.getMessage());
+          }
+        } else {
           // if the request is not recognized at all
 
           builder.append("HTTP/1.1 400 Bad Request\n");
