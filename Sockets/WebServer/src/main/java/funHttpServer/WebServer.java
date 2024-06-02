@@ -255,7 +255,6 @@ class WebServer {
             System.out.println(json);
 
             JsonArray jsonArray = newJsonArray(json);
-            JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
             StringBuilder responseContent = new StringBuilder();
 
             responseContent.append("<html><body>");
