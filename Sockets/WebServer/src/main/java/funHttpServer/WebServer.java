@@ -329,7 +329,7 @@ class WebServer {
             builder.append("Content-Type: text/html; charset=utf-8\n");
             builder.append("\n");
             builder.append("<html><body>");
-            builder.append("<h1>Weather Forecast for ").append(city).append(", ").append(country).append("</h1>");
+            builder.append("<h1>Weather Forecast for ").append(city).append(", ").append(state).append("</h1>");
             builder.append("<p>Temperature: ").append(temperature).append("°C</p>");
             builder.append("<p>Description: ").append(description).append("</p>");
             builder.append("</body></html>");
