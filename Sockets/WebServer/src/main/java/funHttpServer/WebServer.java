@@ -198,33 +198,41 @@ class WebServer {
           // wrong data is given this just crashes
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-          if (!query_pairs.containsKey("num1") || !query_pairs.containsKey("num2")) {
+          try {
+          // Extract path parameters
+          query_pairs = splitQuery(request.replace("multiply?", ""));
+
+          // Check if both parameters are present
+            if (!query_pairs.containsKey("num1") || !query_pairs.containsKey("num2")) {
+              throw new IllegalArgumentException("Missing parameter. Please provide both num1 and num2.");
+            }
+
+            // Parse the parameters as integers
+            Integer num1 = Integer.parseInt(query_pairs.get("num1"));
+            Integer num2 = Integer.parseInt(query_pairs.get("num2"));
+
+            // Do the multiplication
+            Integer result = num1 * num2;
+
+            // Generate response
+            builder.append("HTTP/1.1 200 OK\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Result is: " + result);
+
+          } catch (NumberFormatException e) {
+            // Handle the case where parameters are not valid integers
             builder.append("HTTP/1.1 400 Bad Request\n");
             builder.append("Content-Type: text/html; charset=utf-8\n");
             builder.append("\n");
-            builder.append("Error: Missing parameter. Please provide both num1 and num2.");
-            } else {
-        // Parse the parameters as integers and handle any non-integer input
-                try {
-                  Integer num1 = Integer.parseInt(query_pairs.get("num1"));
-                  Integer num2 = Integer.parseInt(query_pairs.get("num2"));
-
-                  // Do the multiplication
-                  Integer result = num1 * num2;
-
-                  // Generate response
-                  builder.append("HTTP/1.1 200 OK\n");
-                  builder.append("Content-Type: text/html; charset=utf-8\n");
-                  builder.append("\n");
-                  builder.append("Result is: " + result);
-                } catch (NumberFormatException e) {
-                  // Handle the case where parameters are not valid integers
-                  builder.append("HTTP/1.1 400 Bad Request\n");
-                  builder.append("Content-Type: text/html; charset=utf-8\n");
-                  builder.append("\n");
-                  builder.append("Error: Both num1 and num2 must be valid integers.");
-                } 
-            }
+            builder.append("Error: Both num1 and num2 must be valid integers.");
+          } catch (IllegalArgumentException e) {
+            // Handle the case where parameters are missing
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n"); 
+            builder.append("Error: " + e.getMessage());
+          } 
             
         } else if (request.contains("github?")) {
           // pulls the query from the request and runs it with GitHub's REST API
@@ -236,16 +244,58 @@ class WebServer {
           //     "/repos/OWNERNAME/REPONAME/contributors"
 
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-          query_pairs = splitQuery(request.replace("github?", ""));
-          String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
-          System.out.println(json);
+          try {
+            query_pairs = splitQuery(request.replace("github?", ""));
+            if (!query_pairs.containsKey("query")){
+              throw new IllegalArgumentException("Missing 'query' parameter.");
+            }
 
-          builder.append("HTTP/1.1 200 OK\n");
-          builder.append("Content-Type: text/html; charset=utf-8\n");
-          builder.append("\n");
-          builder.append("Check the todos mentioned in the Java source file");
-          // TODO: Parse the JSON returned by your fetch and create an appropriate
-          // response based on what the assignment document asks for
+            String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
+            System.out.println(json);
+
+            Gson gson = new Gson();
+            JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
+            StringBuilder responseContent = new StringBuilder();
+
+            if (jsonElemetn.isJsonArray()) {
+              JsonArray jsonArray = jsonElement.getAsJsonArray();
+              responseContent.append("<html><body>");
+              responseContent.append("<ht>GitHub Repositories</h1>");
+              responseContent.append("<ul>");
+              for (JsonElement element : jsonArray) {
+                JsonObject repo = element.getAsJsonObject();
+                String fullName = repo.get("full_name").getAsString();
+                int id = repo.get("id").getAsInt();
+                String ownerLogin = repo.get("owner").getAsJsonObject().get("login").getAsString();
+                responseContent.append("<li>");
+                responseContent.append("Full Name: ").append(fullName).append("<br>");
+                responseContent.append("ID: ").append(id).append("<br>");
+                responseContent.append("Owner Login: ").append(ownerLogin);
+                responseContent.append("</li>");
+              }
+              responseContent.append("</ul>");
+              responseContent.append("</body></html>");  
+            } else {
+              throw new IllegalStateException("Unexpected JSON structure");
+
+            }
+            builder.append("HTTP/1.1 200 OK\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append(responseContent.toString());
+          }catch (IllegalArgumentException e) {
+            builder.append("HTTP/1.1 400 Bad Request\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Error: ").append(e.getMessage());            
+          }catch (Exception e) {
+            builder.append("HTTP/1.1 500 Internal Server Error\n");
+            builder.append("Content-Type: text/html; charset=utf-8\n");
+            builder.append("\n");
+            builder.append("Error: An unexpected error occurred");
+            e.printStackTrace();
+          }
+          
 
         } else {
           // if the request is not recognized at all
