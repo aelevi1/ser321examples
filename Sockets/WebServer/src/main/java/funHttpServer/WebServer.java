@@ -296,55 +296,34 @@ class WebServer {
           }
           
 
-        }else if(request.contains("weather?")){
-
+        }else if (request.contains("concat?")) {
           Map<String, String> query_pairs = new LinkedHashMap<String, String>();
+          try {
+            query_pairs = splitQuery(request.replace("concat?", ""));
 
-          try{
-            query_pairs = splitQuery(request.replace("weather?", ""));
-
-            String city = query_pairs.get("city");
-            String state = query_pairs.get("state");
-
-            if (city.isEmpty() || state.isEmpty()) {
-              throw new IllegalArgumentException("Missing 'city' or 'state' parameter");
+            // Check if both parameters are present
+            if (!query_pairs.containsKey("str1") || !query_pairs.containsKey("str2")) {
+              throw new IllegalArgumentException("Missing parameter. Please provide both str1 and str2.");
             }
 
-            // Fetch weather data from a weather API
-            String apiKey = "YOUR_API_KEY";
-            String apiUrl = "http://api.openweathermap.org/data/2.5/weather?=" + city + ", " + state + "&appid=" + apiKey;
-            String weatherJson = fetchURL(apiUrl);
+            // Get the parameters
+            String str1 = query_pairs.get("str1");
+            String str2 = query_pairs.get("str2");
 
-            //Parse JSON response
-            JSONObject weatherData = new JSONObject(weatherJson);
-            JSONObject main = weatherData.getJSONObject("main");
-            JSONArray weatherArray = weatherData.getJSONArray("weather");
-            JSONObject weather = weatherArray.getJSONObject(0);
+            // Concatenate the strings
+            String result = str1 + str2;
 
-            // Extract weather information
-            double temperature = main.getDouble("temp");
-            String description = weather.getString("description");
-
+            // Generate response
             builder.append("HTTP/1.1 200 OK\n");
             builder.append("Content-Type: text/html; charset=utf-8\n");
             builder.append("\n");
-            builder.append("<html><body>");
-            builder.append("<h1>Weather Forecast for ").append(city).append(", ").append(state).append("</h1>");
-            builder.append("<p>Temperature: ").append(temperature).append("°C</p>");
-            builder.append("<p>Description: ").append(description).append("</p>");
-            builder.append("</body></html>");
+            builder.append("Concatenated result: " + result);
+
           }catch (IllegalArgumentException e) {
             builder.append("HTTP/1.1 400 Bad Request\n");
             builder.append("Content-Type: text/html; charset=utf-8\n");
             builder.append("\n");
-            builder.append("Error: ").append(e.getMessage());  
-          }catch (Exception e) {
-            builder.append("HTTP/1.1 500 Internal Server Error\n");
-            builder.append("Content-Type: text/html; charset=utf-8\n");
-            builder.append("\n");
-            builder.append("Error: An unexpected error occurred");
-            e.printStackTrace();
-        } 
+            builder.append("Error: " + e.getMessage());
 
       }else {
           // if the request is not recognized at all
