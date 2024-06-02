@@ -304,10 +304,10 @@ class WebServer {
             query_pairs = splitQuery(request.replace("weather?", ""));
 
             String city = query_pairs.get("city");
-            String country = query_pairs.get("country");
+            String state = query_pairs.get("state");
 
-            if (city.isEmpty() || country.isEmpty()) {
-              throw new IllegalArgumentException("Missing 'city' or 'country' parameter");
+            if (city.isEmpty() || state.isEmpty()) {
+              throw new IllegalArgumentException("Missing 'city' or 'state' parameter");
             }
 
             // Fetch weather data from a weather API
