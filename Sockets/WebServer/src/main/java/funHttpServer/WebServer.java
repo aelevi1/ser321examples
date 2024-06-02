@@ -324,7 +324,7 @@ class WebServer {
             builder.append("Content-Type: text/html; charset=utf-8\n");
             builder.append("\n");
             builder.append("Error: " + e.getMessage());
-
+          }
       }else {
           // if the request is not recognized at all
 
