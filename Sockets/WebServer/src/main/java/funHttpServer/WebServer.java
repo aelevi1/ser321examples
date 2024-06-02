@@ -254,7 +254,7 @@ class WebServer {
             String json = fetchURL("https://api.github.com/" + query_pairs.get("query"));
             System.out.println(json);
 
-            JSONArray jsonArray = newJSONArray(json);
+            JsonArray jsonArray = newJsonArray(json);
             JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
             StringBuilder responseContent = new StringBuilder();
 
@@ -263,10 +263,10 @@ class WebServer {
             responseContent.append("<ul>");
 
             for (int i = 0; i < jsonArray.length(); i++) {
-              JSONObject repo = jsonArray.getJSONObject(i);
+              JsonObject repo = jsonArray.getJsonObject(i);
               String fullName = repo.getString("full_name");
               int id = repo.getInt("id");
-              String ownerLogin = repo.getJSONObject("owner").getString("login");
+              String ownerLogin = repo.getJsonObject("owner").getString("login");
 
               responseContent.append("<li>");
               responseContent.append("Full Name: ").append(fullName).append("<br>");
