@@ -387,10 +387,10 @@ class WebServer {
    */
   public static Map<String, String> splitQuery(String query) throws UnsupportedEncodingException {
 
-    if(query == null){
+    if(query.isEmpty()){
       throw new IllegalArgumentException("Query cannot be null");
     }
-    
+
     Map<String, String> query_pairs = new LinkedHashMap<String, String>();
     // "q=hello+world%2Fme&bob=5"
     String[] pairs = query.split("&");
