@@ -18,6 +18,7 @@ package funHttpServer;
 
 import java.io.*;
 import java.net.*;
+import org.json.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,8 +26,6 @@ import java.util.Random;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.nio.charset.Charset;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 
 class WebServer {
