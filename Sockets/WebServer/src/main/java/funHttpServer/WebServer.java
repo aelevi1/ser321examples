@@ -312,7 +312,7 @@ class WebServer {
 
             // Fetch weather data from a weather API
             String apiKey = "YOUR_API_KEY";
-            String apiUrl = "http://api.openweathermap.org/data/2.5/weather?=" + city + ", " + country + "&appid=" + apiKey;
+            String apiUrl = "http://api.openweathermap.org/data/2.5/weather?=" + city + ", " + state + "&appid=" + apiKey;
             String weatherJson = fetchURL(apiUrl);
 
             //Parse JSON response
